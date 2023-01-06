@@ -53,6 +53,12 @@ private:
 	Vector2 tileSize = {50,50};
 	Texture2D piecesTexture[12];
 
+
+
+	//Droit de roque des joueurs (blancs petit, grand, noir petit grand).
+	bool roques[4] = { true, true, true, true };
+	
+	
 	//Trait du joueur, true : blanc, false : noir
 	bool trait = true;
 

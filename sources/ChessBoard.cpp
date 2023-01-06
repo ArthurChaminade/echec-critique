@@ -400,9 +400,29 @@ bool ChessBoard::isMoveCorrect(uint_fast8_t colonneDepart, uint_fast8_t ligneDep
 
 	case 6:
 		//king
-		classic = ((colonneDepart + 1 == colonneArrivee || colonneDepart - 1 == colonneArrivee) && (ligneDepart + 1 == ligneArrivee || ligneDepart - 1 == ligneArrivee));		
-		roque = false; //TODO : Implémenter le roque
-		return ((classic || roque) && (pieceArrivee == 0 || pieceArrivee == 6));
+		classic = (colonneDepart != colonneArrivee || ligneDepart != ligneArrivee);
+		classic &= (colonneDepart == colonneArrivee + 1) || (colonneDepart == colonneArrivee) || (colonneDepart == colonneArrivee - 1);
+		classic &= (ligneDepart == ligneArrivee + 1) || (ligneDepart == ligneArrivee) || (ligneDepart == ligneArrivee - 1);
+		if (roques[0] && chessBoard[0][5] == 0 && chessBoard[0][6] == 0 && colonneDepart == 4 && ligneDepart == 0 && colonneArrivee == 6 && ligneArrivee == 0) {
+			roque &= !isKingAttacked(true);
+			swapPieces(4, 0, 5, 0);
+			roque &= !isKingAttacked(true);
+			swapPieces(5, 0, 6, 0);
+			roque &= !isKingAttacked(true);
+			swapPieces(6, 0, 4, 0);
+			return true;
+		}
+
+		if (roques[1] && chessBoard[0][3] == 0 && chessBoard[0][2] == 0 && colonneDepart == 4 && ligneDepart == 0 && colonneArrivee == 2 && ligneArrivee == 0) {
+			roque &= !isKingAttacked(true);
+			swapPieces(4, 0, 3, 0);
+			roque &= !isKingAttacked(true);
+			swapPieces(5, 0, 2, 0);
+			roque &= !isKingAttacked(true);
+			swapPieces(2, 0, 4, 0);
+			return true;
+		}
+		return ((classic) && (pieceArrivee == 0 || pieceArrivee == 6));
 		break;
 
 
@@ -586,10 +606,31 @@ bool ChessBoard::isMoveCorrect(uint_fast8_t colonneDepart, uint_fast8_t ligneDep
 
 	case 12:
 		//king
-		classic = ((colonneDepart + 1 == colonneArrivee || colonneDepart - 1 == colonneArrivee) && (ligneDepart + 1 == ligneArrivee || ligneDepart - 1 == ligneArrivee));
-		roque = false; //TODO : Implémenter le roque
+		classic = (colonneDepart != colonneArrivee || ligneDepart != ligneArrivee);
+		classic &= (colonneDepart == colonneArrivee + 1) || (colonneDepart == colonneArrivee) || (colonneDepart == colonneArrivee - 1);
+		classic &= (ligneDepart == ligneArrivee + 1) || (ligneDepart == ligneArrivee) || (ligneDepart == ligneArrivee - 1);
+		if (roques[2] && chessBoard[7][5] == 0 && chessBoard[7][6] == 0 && colonneDepart == 4 && ligneDepart == 7 && colonneArrivee == 6 && ligneArrivee == 7) {
+			roque &= !isKingAttacked(true);
+			swapPieces(4, 7, 5, 7);
+			roque &= !isKingAttacked(true);
+			swapPieces(5, 7, 6, 7);
+			roque &= !isKingAttacked(true);
+			swapPieces(6, 7, 4, 7);
+			return true;
+		}
+		if (roques[3] && chessBoard[7][3] == 0 && chessBoard[7][2] == 0 && colonneDepart == 4 && ligneDepart == 7 && colonneArrivee == 2 && ligneArrivee == 7) {
+			roque &= !isKingAttacked(true);
+			swapPieces(4, 7, 3, 7);
+			roque &= !isKingAttacked(true);
+			swapPieces(5, 7, 2, 7);
+			roque &= !isKingAttacked(true);
+			swapPieces(2, 7, 4, 7);
+			return true;
+		}
 		return ((classic || roque) && (pieceArrivee <= 6));
 		break;
+
+
 	default:
 		cout << "isMoveCorrect : piece not recognised";
 		return false;
@@ -627,6 +668,7 @@ bool ChessBoard::playMove(uint_fast8_t colonneDepart, uint_fast8_t ligneDepart, 
 			chessBoard[ligneDepart][colonneDepart] = 0;
 			trait = !trait;
 			addAllMoves();
+			printAllMoves();
 			return true;
 		}
 	}
