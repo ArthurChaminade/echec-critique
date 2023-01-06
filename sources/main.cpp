@@ -6,7 +6,21 @@ int main() {
     
     ChessBoard chessBoard;
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+
+    //Checking time for a function
+    
+    time_t beforeTime;
+    time_t afterTime;
+    time(&beforeTime);
+    chessBoard.addAllMoves();
+    time(&afterTime);
+    cout << "Temps pour la fonction : " << afterTime - beforeTime << "\n";
+    
+    chessBoard.printAllMoves();
+
+
+    
+    InitWindow(screenWidth, screenHeight, "Echec Critique");
     Texture2D piecesTexture[12] = {LoadTexture(ASSETS_PATH"white_pawn.png"), LoadTexture(ASSETS_PATH"white_knight.png"),LoadTexture(ASSETS_PATH"white_bishop.png"), LoadTexture(ASSETS_PATH"white_rook.png"), LoadTexture(ASSETS_PATH"white_queen.png"),LoadTexture(ASSETS_PATH"white_king.png"), LoadTexture(ASSETS_PATH"black_pawn.png"), LoadTexture(ASSETS_PATH"black_knight.png"),  LoadTexture(ASSETS_PATH"black_bishop.png"), LoadTexture(ASSETS_PATH"black_rook.png"), LoadTexture(ASSETS_PATH"black_queen.png"),LoadTexture(ASSETS_PATH"black_king.png")};
 
     chessBoard.loadTexture(piecesTexture);
@@ -39,4 +53,5 @@ int main() {
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
     return 0;
+    
 }

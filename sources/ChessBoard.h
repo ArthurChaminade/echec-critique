@@ -46,13 +46,24 @@ private:
 	//Coups légaux (2 positions par coups)
 	uint_fast8_t legalMoves[maxMoves * 4];
 
-	string chessBoardToFen();
+	uint_fast8_t nbMoves;
 	
 
 	Vector2 boardDisplayPosition {50,50};
 	Vector2 tileSize = {50,50};
 	Texture2D piecesTexture[12];
 
+	//Trait du joueur, true : blanc, false : noir
+	bool trait = true;
+
+	string clm = "abcdefgh";
+	string pieceStr = "NBRQK";
+
+	bool isPieceSelected = false;
+	uint_fast8_t pieceSelected[2] = {10,10};
+	bool mouseOnBoard = false;
+	uint_fast8_t mouseOnTile[2] = { 8,8 };
+	uint_fast8_t selectedTile[2] = { 8,8 };
 public:
 	
 	ChessBoard();
@@ -78,6 +89,25 @@ public:
 	void addQueenMoves(uint_fast8_t, uint_fast8_t, int*);
 
 	void addKingMoves(uint_fast8_t, uint_fast8_t, int*);
+	
+	void addAllMoves();
 
-	void addLegalMoves();
+	bool isKingAttacked(bool);
+	
+	bool isMoveCorrect(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t);
+
+	bool isMoveLegal(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t);
+
+	void swapPieces(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t);
+
+	bool playMove(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t);
+
+	void printAllMoves();
+
+	void drawMoves(uint_fast8_t, uint_fast8_t);
+	
+	string moveToString(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t);
+
+
+
 };
