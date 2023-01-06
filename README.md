@@ -1,20 +1,19 @@
-# Simple and portable CMake template for raylib
+# Chess AI project
 
-This is a basic project template for raylib using CMake and has been tested with Visual Studio, Visual Studio Code and CLion.
+The goal of this project is to create a Chess AI in order to learn more about C++, raylib, genetic algorithms and neural networks in general.
 
-The master branch of the raylib source code is downloaded using CMake FetchContent from github and compiled from source as it is much easier than including prebuilt binaries for every platform and configuration.
 
-Building from the cmake file will build both raylib and `src/main.c` which includes a basic example of a raylib program.
+# What is already present
+The project as of now contains a chess board and a way to display and play it through a gui.
 
-## Asset handling
+# What is coming soon
+Implement a way to win/loose/draw games
+Promotions
+En passant
+More gui stuff
+Simple bot that plays random legal moves
 
-The example in `src/main.c` uses an example image located in the `assets` folder.
-To load it we use `ASSETS_PATH`, which is a string macro with the *absolute* path "assets" directory.
-This macro is defined in the `CMakeLists.txt` file on line `23`.
- 
-If you plan on releasing or sharing your game consider manually setting the value of the `ASSETS_PATH` macro.
 
-In C you can concatenate string literals by putting them next to each other, 
-eg: `"A" "B"` is `"AB"`. So ASSETS_PATH `"test.png"` becomes `"/path/to/your/assets/test.png"`
-
-If you wanna share your game with others you should set ASSETS_PATH to be a *relative* path like "./assets/". You can do this in the CMakeLists.txt file. 
+# What is coming next
+The actual AI
+Pieces lost
