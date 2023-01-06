@@ -110,10 +110,10 @@ public:
 
 	void printAllMoves();
 
-	void drawMoves(uint_fast8_t, uint_fast8_t);
+	void roquesCheck(uint_fast8_t, uint_fast8_t);
 	
 	string moveToString(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t);
 
-
+	void start();
 
 };

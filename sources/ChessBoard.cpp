@@ -32,7 +32,9 @@
 * 4 bits : roques disponibles (Petit roque blanc, grand roque blanc, petit roque noir, grand roque noir)
 */
 ChessBoard::ChessBoard() {
-
+	trait = true;
+	fill(begin(roques), end(roques), true);
+	addAllMoves();
 }
 void ChessBoard::loadTexture(Texture2D pieces[12])
 {
@@ -171,6 +173,7 @@ bool ChessBoard::isKingAttacked(bool color) {
 	uint_fast8_t king;
 	uint_fast8_t kingLigne;
 	uint_fast8_t kingColonne;
+	bool ret = false;
 	if (color) {
 		king = 6;
 	}
@@ -193,14 +196,15 @@ bool ChessBoard::isKingAttacked(bool color) {
 			}
 			if (piece != 0) {
 				if (piece < 7 && !color) {
-					return isMoveCorrect(j, i, kingColonne, kingLigne);
+					ret |= isMoveCorrect(j, i, kingColonne, kingLigne);
 				}
 				if (piece >= 7 && color) {
-					return isMoveCorrect(j, i, kingColonne, kingLigne);
+					ret |= isMoveCorrect(j, i, kingColonne, kingLigne);
 				}
 			}
 		}
 	}
+	return ret;
 
 
 
@@ -627,7 +631,7 @@ bool ChessBoard::isMoveCorrect(uint_fast8_t colonneDepart, uint_fast8_t ligneDep
 			swapPieces(2, 7, 4, 7);
 			return true;
 		}
-		return ((classic || roque) && (pieceArrivee <= 6));
+		return (classic && (pieceArrivee <= 6));
 		break;
 
 
@@ -664,6 +668,19 @@ bool ChessBoard::playMove(uint_fast8_t colonneDepart, uint_fast8_t ligneDepart, 
 {
 	for (int i = 0; i < nbMoves; i++) {
 		if (legalMoves[i * 4] == colonneDepart && legalMoves[i * 4 + 1] == ligneDepart && legalMoves[i * 4 + 2] == colonneArrivee && legalMoves[i * 4 + 3] == ligneArrivee) {
+			
+			roquesCheck(colonneDepart, ligneDepart);
+
+			if (colonneDepart == 4 && ligneDepart == 0) {
+				if (colonneArrivee == 6 && ligneArrivee == 0 && chessBoard[ligneDepart][colonneDepart] == 6) {
+					//Petit Roque
+					swapPieces(5, 0, 7, 0);
+				}
+				if (colonneArrivee == 2 && ligneArrivee == 0 && chessBoard[ligneDepart][colonneDepart] == 6) {
+					//Grand Roque
+					swapPieces(2, 0, 0, 0);
+				}
+			}
 			swapPieces(colonneDepart, ligneDepart, colonneArrivee, ligneArrivee);
 			chessBoard[ligneDepart][colonneDepart] = 0;
 			trait = !trait;
@@ -681,12 +698,25 @@ void ChessBoard::printAllMoves()
 	for (int i = 0; i < nbMoves; i++) {
 		cout << moveToString(legalMoves[i * 4], legalMoves[i * 4 + 1], legalMoves[i * 4 + 2], legalMoves[i * 4 + 3]);
 
-
 		if (i < nbMoves - 1) {
 			cout << "; ";
 		}
 	}
 	cout << '\n';
+}
+
+void ChessBoard::roquesCheck(uint_fast8_t colonneDepart, uint_fast8_t ligneDepart)
+{
+	if (ligneDepart == 0) {
+		cout << "roquesCheck ligne depart 0 : colonne depart = " << (int)colonneDepart << "\n";
+		cout << "roques[0] : " << roques[0] << "\n";
+		roques[0] &= (colonneDepart != 7 && colonneDepart != 4);
+		roques[1] &= (colonneDepart != 0 && colonneDepart != 4);
+	}
+	if (ligneDepart == 7) {
+		roques[2] &= (colonneDepart != 7 && colonneDepart != 4);
+		roques[3] &= (colonneDepart != 0 && colonneDepart != 4);
+	}
 }
 
 string ChessBoard::moveToString(uint_fast8_t colonneDepart, uint_fast8_t ligneDepart, uint_fast8_t colonneArrivee, uint_fast8_t ligneArrivee)
@@ -714,4 +744,9 @@ string ChessBoard::moveToString(uint_fast8_t colonneDepart, uint_fast8_t ligneDe
 
 	return ret;
 
+}
+
+void ChessBoard::start()
+{
+	
 }

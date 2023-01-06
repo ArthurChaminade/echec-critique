@@ -7,17 +7,6 @@ int main() {
     ChessBoard chessBoard;
 
 
-    //Checking time for a function
-    
-    time_t beforeTime;
-    time_t afterTime;
-    time(&beforeTime);
-    chessBoard.addAllMoves();
-    time(&afterTime);
-    cout << "Temps pour la fonction : " << afterTime - beforeTime << "\n";
-    
-    chessBoard.printAllMoves();
-
 
     
     InitWindow(screenWidth, screenHeight, "Echec Critique");
@@ -52,6 +41,7 @@ int main() {
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
+    
     return 0;
     
 }
