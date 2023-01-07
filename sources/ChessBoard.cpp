@@ -51,7 +51,7 @@ void ChessBoard::display()
 	Vector2 recPos = { rec.x, rec.y };
 	mouseOnBoard = false;
 	//dessine le plateau
-	for (int ligne = 0; ligne < 8; ligne++) {
+	for (int ligne = 7; ligne >=  0; ligne--) {
 		for (int colonne = 0; colonne < 8; colonne++) {
 			if (isBlack) {
 				tileColor = BROWN;
@@ -91,13 +91,33 @@ void ChessBoard::display()
 		rec.x = boardDisplayPosition.x;
 		isBlack = !isBlack;
 	}
+
+	//Draw Moves
 	if (isPieceSelected) {
 		for (int i = 0; i < nbMoves; i++) {
 			if (legalMoves[i*4] == selectedTile[0] && legalMoves[i*4 + 1] == selectedTile[1]) {
-				DrawCircle(boardDisplayPosition.x + (0.5f + legalMoves[i*4 +2]) * tileSize.x, boardDisplayPosition.y + (legalMoves[i*4+3] + 0.5f) * (tileSize.y), tileSize.x / 5.f, GRAY);
+				DrawCircle(boardDisplayPosition.x + (0.5f + legalMoves[i*4 +2]) * tileSize.x, boardDisplayPosition.y + (8- (legalMoves[i*4+3] + 0.5f)) * (tileSize.y), tileSize.x / 5.f, GRAY);
 			}
 		}
 	}
+
+	if (gameEnd) {
+		DrawRectangle(boardDisplayPosition.x + 1 * tileSize.x, boardDisplayPosition.y + 2.5 * tileSize.y, 6 * tileSize.x, 2 * tileSize.y, Fade(GRAY, 0.7));
+		if (win) {
+
+			if (whiteWin) {
+				DrawText("White won", boardDisplayPosition.x + 1.5 * tileSize.x, boardDisplayPosition.y + 3 * tileSize.y, tileSize.x, BLACK);
+			}
+			else {
+				DrawText("Black won", boardDisplayPosition.x + 1.5 * tileSize.x, boardDisplayPosition.y + 3 * tileSize.y, tileSize.x, BLACK);
+			}
+		}
+		else {
+			DrawText("It's a draw", boardDisplayPosition.x + 1.25 * tileSize.x, boardDisplayPosition.y + 3 * tileSize.y, tileSize.x, BLACK);
+		}
+	}
+
+
 	//gère les évenements sur le plateau
 	if (mouseOnBoard) {
 		
@@ -112,23 +132,26 @@ void ChessBoard::display()
 
 			}
 			if (tileValue > 0 && tileValue <= 12) {
-				isPieceSelected = true;
-				pieceSelected[0] = mouseOnTile[0];
-				pieceSelected[1] = mouseOnTile[1];
-			}
-			else {
 				isPieceSelected = false;
+				if (trait && tileValue < 7) {
+					isPieceSelected = true;
+					pieceSelected[0] = mouseOnTile[0];
+					pieceSelected[1] = mouseOnTile[1];
+				}
+				if (!trait && tileValue > 6) {
+
+					isPieceSelected = true;
+					pieceSelected[0] = mouseOnTile[0];
+					pieceSelected[1] = mouseOnTile[1];
+				}
 			}
-			
-
-			
-			
 		}
-
-		
-
-
 	}
+
+
+
+
+
 }
 
 void ChessBoard::movePiece(uint_fast8_t colonneDepart, uint_fast8_t ligneDepart, uint_fast8_t colonneArrivee, uint_fast8_t ligneArrivee) {
@@ -169,10 +192,30 @@ void ChessBoard::addAllMoves()
 	}
 }
 
+void ChessBoard::checkWin()
+{ 
+	if (nbMoves == 0) {
+		cout << "ENDGAME : ";
+		if (isKingAttacked(trait)) {
+			cout << "WHITE WON !!\n";
+			win = true;
+			whiteWin = !trait;
+			if (trait) {
+				cout << "BLACK WON !!\n";
+			}
+		}
+		else {
+			draw = true;
+			cout << "DRAW\n";
+		}
+		gameEnd = true;
+	}
+}
+
 bool ChessBoard::isKingAttacked(bool color) {
 	uint_fast8_t king;
-	uint_fast8_t kingLigne;
-	uint_fast8_t kingColonne;
+	uint_fast8_t kingLigne = 8;
+	uint_fast8_t kingColonne = 8;
 	bool ret = false;
 	if (color) {
 		king = 6;
@@ -219,9 +262,9 @@ bool ChessBoard::isMoveCorrect(uint_fast8_t colonneDepart, uint_fast8_t ligneDep
 	uint_fast8_t piece = chessBoard[ligneDepart][colonneDepart];
 	uint_fast8_t pieceArrivee = chessBoard[ligneArrivee][colonneArrivee];
 
-	bool b;
-	bool classic;
-	bool roque;
+	bool b = true;
+	bool classic = true;
+	bool roque = true;
 	switch (piece) {
 	case 0:
 		//pas de pièces
@@ -426,7 +469,7 @@ bool ChessBoard::isMoveCorrect(uint_fast8_t colonneDepart, uint_fast8_t ligneDep
 			swapPieces(2, 0, 4, 0);
 			return true;
 		}
-		return ((classic) && (pieceArrivee == 0 || pieceArrivee == 6));
+		return ((classic) && (pieceArrivee == 0 || pieceArrivee > 6));
 		break;
 
 
@@ -626,7 +669,7 @@ bool ChessBoard::isMoveCorrect(uint_fast8_t colonneDepart, uint_fast8_t ligneDep
 			roque &= !isKingAttacked(true);
 			swapPieces(4, 7, 3, 7);
 			roque &= !isKingAttacked(true);
-			swapPieces(5, 7, 2, 7);
+			swapPieces(3, 7, 2, 7);
 			roque &= !isKingAttacked(true);
 			swapPieces(2, 7, 4, 7);
 			return true;
@@ -648,12 +691,15 @@ bool ChessBoard::isMoveCorrect(uint_fast8_t colonneDepart, uint_fast8_t ligneDep
 bool ChessBoard::isMoveLegal(uint_fast8_t colonneDepart, uint_fast8_t ligneDepart, uint_fast8_t colonneArrivee, uint_fast8_t ligneArrivee)
 {
 	uint_fast8_t piece = chessBoard[ligneDepart][colonneDepart];
+	uint_fast8_t pieceArrivee = chessBoard[ligneArrivee][colonneArrivee];
 	bool legal = piece > 0 && piece <= 12;
 	legal &= trait ^ (piece >= 7); //Le joueur joue une pièce à lui
 	legal &= isMoveCorrect(colonneDepart, ligneDepart, colonneArrivee, ligneArrivee);
 	swapPieces(colonneDepart, ligneDepart, colonneArrivee, ligneArrivee);
+	chessBoard[ligneDepart][colonneDepart] = 0;
 	legal &= !isKingAttacked(trait);
 	swapPieces(colonneDepart, ligneDepart, colonneArrivee, ligneArrivee);
+	chessBoard[ligneArrivee][colonneArrivee] = pieceArrivee;
 	return legal;
 }
 
@@ -681,10 +727,22 @@ bool ChessBoard::playMove(uint_fast8_t colonneDepart, uint_fast8_t ligneDepart, 
 					swapPieces(2, 0, 0, 0);
 				}
 			}
+			if (colonneDepart == 4 && ligneDepart == 7) {
+				if (colonneArrivee == 6 && ligneArrivee == 7 && chessBoard[ligneDepart][colonneDepart] == 12) {
+					//Petit Roque
+					swapPieces(5, 7, 7, 7);
+				}
+				if (colonneArrivee == 2 && ligneArrivee == 7 && chessBoard[ligneDepart][colonneDepart] == 12) {
+					//Grand Roque
+					swapPieces(3, 7, 0, 7);
+				}
+			}
 			swapPieces(colonneDepart, ligneDepart, colonneArrivee, ligneArrivee);
 			chessBoard[ligneDepart][colonneDepart] = 0;
 			trait = !trait;
 			addAllMoves();
+			checkWin();
+			cout << "newMove : ";
 			printAllMoves();
 			return true;
 		}
@@ -746,7 +804,30 @@ string ChessBoard::moveToString(uint_fast8_t colonneDepart, uint_fast8_t ligneDe
 
 }
 
-void ChessBoard::start()
+void ChessBoard::restart()
 {
-	
+	uint_fast8_t newBoard[8][8] = {{4, 2, 3, 5, 6, 3, 2, 4},
+									{1, 1, 1, 1, 1, 1, 1, 1},
+									{0, 0, 0, 0, 0, 0, 0, 0},
+									{0, 0, 0, 0, 0, 0, 0, 0},
+									{0, 0, 0, 0, 0, 0, 0, 0},
+									{0, 0, 0, 0, 0, 0, 0, 0},
+									{7, 7, 7, 7, 7, 7, 7, 7},
+									{10, 8, 9, 11, 12, 9, 8, 10} };
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			chessBoard[i][j] = newBoard[i][j];
+		}
+	}
+
+	trait = true;
+	fill(begin(roques), end(roques), true);
+	addAllMoves();
+	gameEnd = false;
+	win = false;
+	whiteWin = false;
+}
+
+bool ChessBoard::getTrait() {
+	return trait;
 }

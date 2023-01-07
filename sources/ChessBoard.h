@@ -54,6 +54,12 @@ private:
 	Texture2D piecesTexture[12];
 
 
+	//Game State
+	bool gameEnd = false;
+	bool whiteWin = false;
+	bool win = false;
+	bool draw = false;
+
 
 	//Droit de roque des joueurs (blancs petit, grand, noir petit grand).
 	bool roques[4] = { true, true, true, true };
@@ -62,9 +68,13 @@ private:
 	//Trait du joueur, true : blanc, false : noir
 	bool trait = true;
 
+
+	//String to print moves
 	string clm = "abcdefgh";
 	string pieceStr = "NBRQK";
 
+
+	//Boolean for display and gui
 	bool isPieceSelected = false;
 	uint_fast8_t pieceSelected[2] = {10,10};
 	bool mouseOnBoard = false;
@@ -79,6 +89,8 @@ public:
 	void setTileSize(Vector2);
 
 	void loadTexture(Texture2D[12]);
+
+	void displayEndGame();
 
 	void display();
 
@@ -98,6 +110,8 @@ public:
 	
 	void addAllMoves();
 
+	void checkWin();
+
 	bool isKingAttacked(bool);
 	
 	bool isMoveCorrect(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t);
@@ -114,6 +128,7 @@ public:
 	
 	string moveToString(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t);
 
-	void start();
+	void restart();
 
+	bool getTrait();
 };
