@@ -4,8 +4,9 @@
 #include<iostream>
 #include<string>
 #include<cstdint>
-#include<cstdint>
-#include <raylib.h>
+#include<raylib.h>
+#include<vector>
+#include"Network.h"
 using namespace std;
 
 /*Pièces
@@ -34,20 +35,26 @@ const int maxMoves = 100;
 class ChessBoard {
 private:
 	//Représentation du plateau
-	uint_fast8_t chessBoard[8][8] = { {4, 2, 3, 5, 6, 3, 2, 4},
-									{1, 1, 1, 1, 1, 1, 1, 1},
+	uint_fast8_t chessBoard[8][8] = { {0, 0, 0, 5, 6, 0, 0, 0},
 									{0, 0, 0, 0, 0, 0, 0, 0},
 									{0, 0, 0, 0, 0, 0, 0, 0},
 									{0, 0, 0, 0, 0, 0, 0, 0},
 									{0, 0, 0, 0, 0, 0, 0, 0},
-									{7, 7, 7, 7, 7, 7, 7, 7},
-									{10, 8, 9, 11, 12, 9, 8, 10}};
+									{0, 0, 0, 0, 0, 0, 0, 0},
+									{1, 0, 0, 0, 0, 0, 0, 0},
+									{0, 0, 0, 0, 12, 0, 0,0}};
 
 	//Coups légaux (2 positions par coups)
 	uint_fast8_t legalMoves[maxMoves * 4];
+	uint_fast8_t nbQueens = 2;
+	uint_fast8_t nbRooks = 4;
+	uint_fast8_t nbBishops = 4;
+	uint_fast8_t nbKnights = 4;
+	uint_fast8_t nbPawns = 16;
 
-	uint_fast8_t nbMoves;
 	
+	
+	int nbCoups = 0;
 
 	Vector2 boardDisplayPosition {50,50};
 	Vector2 tileSize = {50,50};
@@ -60,6 +67,14 @@ private:
 	bool win = false;
 	bool draw = false;
 
+
+	//En passant
+	bool enPassantOk = false;
+	uint_fast8_t enPassant = 8;
+
+
+	//50 moves rule
+	int fiftyMove = 0;
 
 	//Droit de roque des joueurs (blancs petit, grand, noir petit grand).
 	bool roques[4] = { true, true, true, true };
@@ -81,7 +96,7 @@ private:
 	uint_fast8_t mouseOnTile[2] = { 8,8 };
 	uint_fast8_t selectedTile[2] = { 8,8 };
 public:
-	
+	uint_fast8_t nbMoves;
 	ChessBoard();
 
 	void setBoardDisplayPosition(Vector2);
@@ -97,6 +112,8 @@ public:
 	void movePiece(uint_fast8_t,uint_fast8_t, uint_fast8_t, uint_fast8_t);
 
 	void addMove(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t, int*);
+
+	void addPawnMoves(uint_fast8_t, int_fast8_t, int*);
 
 	void addKnightMoves(uint_fast8_t, uint_fast8_t, int*);
 
@@ -122,6 +139,8 @@ public:
 
 	bool playMove(uint_fast8_t, uint_fast8_t, uint_fast8_t, uint_fast8_t);
 
+	bool playMove(int move);
+
 	void printAllMoves();
 
 	void roquesCheck(uint_fast8_t, uint_fast8_t);
@@ -131,4 +150,17 @@ public:
 	void restart();
 
 	bool getTrait();
+
+
+	//AI FUNCTIONS
+
+	void randomPlayMove();
+
+	vector<float> chessBoardToVectorInput();
+
+	float evaluateMove(Network, int);
+
+	void playBestMove(Network);
+
+	int matchNetwork(Network*, Network*);
 };
